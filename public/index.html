@@ -4,92 +4,195 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Aviv Pilipski</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Poppins:wght@300;500;700&display=swap" rel="stylesheet">
     <style>
         body, html {
             margin: 0;
             padding: 0;
             height: 100%;
-            overflow: hidden; /* Prevent scrolling */
-        }
-
-        .video-background {
-            position: absolute;
-            top: 0;
-            left: 0;
-            min-width: 100%;
-            min-height: 100%;
-            z-index: -1; /* Send the video behind other content */
-            object-fit: cover; /* Ensure the video covers the entire area */
-        }
-
-        .content {
-            position: relative; /* Allow positioning of child elements */
-            color: #333; /* Dark gray text color */
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            text-align: center;
-            font-family: 'Roboto', sans-serif; /* Sans-serif font */
-        }
-
-        h1 {
-            font-weight: bold;
-            font-size: 3em;
-            margin: 0; /* Remove default margin */
-            text-transform: uppercase; /* Make text all caps */
-            text-shadow: 1px 1px 3px rgba(255, 255, 255, 0.7); /* Shadow for visibility */
-        }
-
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); /* Responsive grid */
-            gap: 10px; /* Space between items */
-            max-width: 800px; /* Limit width for readability */
-            width: 100%;
-            margin-top: 40px; /* Space between name and gallery */
             overflow: hidden;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(
+                180deg,
+                #E6F3F7 0%,
+                #C2E5ED 35%,
+                #89CFF0 70%,
+                #5DA9E9 100%
+            );
             position: relative;
         }
 
+        .waves {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50%;
+            background: 
+                radial-gradient(circle at 50% 100%, 
+                    rgba(255,255,255,0.2) 0%, 
+                    transparent 50%);
+            animation: waveMotion 8s infinite linear;
+            pointer-events: none;
+        }
+
+        @keyframes waveMotion {
+            0% { transform: translateY(0); }
+            50% { transform: translateY(10px); }
+            100% { transform: translateY(0); }
+        }
+
+        .content {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 5vh;
+            gap: 5vh;
+            z-index: 2;
+        }
+
+        .name-container {
+            position: fixed;
+            top: 5vh;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px 40px;
+            border-radius: 15px;
+            backdrop-filter: blur(5px);
+        }
+
+        .letter {
+            display: inline-block;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            font-size: 3.5em;
+            font-weight: 700;
+            color: #2c3e50;
+            text-shadow: 2px 2px 4px rgba(255, 255, 255, 0.3);
+        }
+
+        .letter.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .letter.space {
+            margin-right: 0.5em;
+        }
+
+        .gallery-container {
+            position: relative;
+            width: 80vmin;
+            height: 60vmin;
+            perspective: 1500px;
+            margin-top: 20vh;
+        }
+
+        .gallery {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
         .gallery-item {
+            position: absolute;
             width: 100%;
+            height: 100%;
             overflow: hidden;
-            border-radius: 10px; /* Rounded corners */
-            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-            transition: transform 0.3s ease;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            transition: transform 1s cubic-bezier(0.4, 0, 0.2, 1);
+            backface-visibility: hidden;
+            border: 3px solid rgba(255, 255, 255, 0.8);
         }
 
-        .gallery-item:hover {
-            transform: scale(1.05); /* Scale effect on hover */
-        }
-
-        img {
+        .gallery-item img {
             width: 100%;
-            height: auto;
-            display: block; /* Remove space below image */
+            height: 100%;
+            object-fit: cover;
+            border-radius: 12px;
+        }
+
+        .vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: radial-gradient(
+                circle at center,
+                transparent 60%,
+                rgba(0,0,0,0.05) 100%
+            );
+            z-index: 1;
+        }
+
+        .floating-text {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+
+        .text-line {
+            position: absolute;
+            font-family: 'Dancing Script', cursive;
+            color: rgba(0, 0, 0, 0.15);
+            font-size: 32px;
+            white-space: nowrap;
+            animation: floatText 30s linear infinite;
+            opacity: 0;
+            transform: translateX(100%);
+            width: 100%;
+            text-align: left;
+            line-height: 2.5;
+        }
+
+        @keyframes floatText {
+            0% {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            5% {
+                opacity: 0.7;
+            }
+            95% {
+                opacity: 0.7;
+            }
+            100% {
+                transform: translateX(-100%);
+                opacity: 0;
+            }
         }
     </style>
 </head>
 <body>
-    <video class="video-background" autoplay muted loop>
-        <source src="country.mp4" type="video/mp4"> <!-- Replace with your video file -->
-        Your browser does not support the video tag.
-    </video>
-
+    <div class="floating-text" id="textBackground"></div>
+    <div class="waves"></div>
+    <div class="vignette"></div>
     <div class="content">
-        <h1>Aviv Pilipski | אביב פיליפסקי</h1>
-        <div class="gallery">
-            <div class="gallery-item"><img src="one.jpeg" alt="Image 1"></div>
-            <div class="gallery-item"><img src="two.jpeg" alt="Image 2"></div>
-            <div class="gallery-item"><img src="three.jpeg" alt="Image 3"></div>
-            <div class="gallery-item"><img src="four.jpeg" alt="Image 4"></div>
-            <div class="gallery-item"><img src="five.jpeg" alt="Image 5"></div>
-            <div class="gallery-item"><img src="six.jpg" alt="Image 6"></div>
-            <!-- Add more images as needed -->
+        <div class="name-container" id="name-container">
+            <!-- Letters will be inserted by JavaScript -->
+        </div>
+        <div class="gallery-container">
+            <div class="gallery" id="gallery"></div>
         </div>
     </div>
+
+    <script src="script.js"></script>
 </body>
 </html>
