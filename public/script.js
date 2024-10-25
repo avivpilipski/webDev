@@ -4,7 +4,7 @@ const images = [
     'three.jpeg',
     'four.jpeg',
     'five.jpeg',
-    'six.jpg'
+    'six.jpeg'
 ];
 
 const name = "Aviv Pilipski";
