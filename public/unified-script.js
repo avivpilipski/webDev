@@ -15,22 +15,103 @@ function getCookie(name) {
     }
     return null;
 }
-
-// User preferences initialization
+// Initialize preferences with default values if not set
 function initializeUserPreferences() {
-    if (!getCookie('userId')) {
-        setCookie('userId', Math.random().toString(36).substr(2, 9), 365);
-    }
-    if (!getCookie('theme')) {
-        setCookie('theme', Math.random() < 0.5 ? 'minimal' : 'detailed', 365);
-    }
-    if (!getCookie('sortPreference')) {
-        setCookie('sortPreference', Math.random() < 0.5 ? 'date' : 'length', 365);
-    }
-    if (!getCookie('username')) {
-        setCookie('username', 'Anonymous_' + getCookie('userId').substr(0, 4), 365);
-    }
+    const preferences = {
+        userId: getCookie('userId') || Math.random().toString(36).substr(2, 9),
+        theme: getCookie('theme') || 'minimal',
+        sortPreference: getCookie('sortPreference') || 'date',
+        username: getCookie('username') || 'Anonymous_' + Math.random().toString(36).substr(2, 4)
+    };
+
+    // Set cookies if they don't exist
+    Object.entries(preferences).forEach(([key, value]) => {
+        if (!getCookie(key)) {
+            setCookie(key, value, 365);
+        }
+    });
+
+    // Mount preferences component
+    const PreferencesComponent = React.createElement(UserPreferences, {
+        currentTheme: preferences.theme,
+        currentSort: preferences.sortPreference,
+        currentUsername: preferences.username,
+        onUpdatePreferences: updatePreferences
+    });
+    
+    ReactDOM.render(PreferencesComponent, document.getElementById('preferences-root'));
 }
+
+function updatePreferences(newPreferences) {
+    Object.entries(newPreferences).forEach(([key, value]) => {
+        setCookie(key, value, 365);
+    });
+    location.reload();
+}
+// Preferences Component
+const PreferencesComponent = () => {
+    const [isOpen, setIsOpen] = React.useState(false);
+    const [preferences, setPreferences] = React.useState({
+        theme: getCookie('theme') || 'minimal',
+        sortPreference: getCookie('sortPreference') || 'date',
+        username: getCookie('username') || 'Anonymous'
+    });
+
+    const handleSave = () => {
+        Object.entries(preferences).forEach(([key, value]) => {
+            setCookie(key, value, 365);
+        });
+        setIsOpen(false);
+        location.reload();
+    };
+
+    return React.createElement(React.Fragment, null,
+        React.createElement('button', {
+            className: 'preferences-button',
+            onClick: () => setIsOpen(true)
+        }, 'Preferences'),
+        isOpen && React.createElement('div', {
+            className: 'modal-overlay',
+            onClick: () => setIsOpen(false)
+        }),
+        isOpen && React.createElement('div', {
+            className: 'preferences-modal'
+        },
+            React.createElement('h2', null, 'Reading Preferences'),
+            React.createElement('div', { className: 'form-group' },
+                React.createElement('label', null, 'Theme'),
+                React.createElement('select', {
+                    value: preferences.theme,
+                    onChange: (e) => setPreferences({ ...preferences, theme: e.target.value })
+                },
+                    React.createElement('option', { value: 'minimal' }, 'Minimal'),
+                    React.createElement('option', { value: 'detailed' }, 'Detailed')
+                )
+            ),
+            React.createElement('div', { className: 'form-group' },
+                React.createElement('label', null, 'Sort By'),
+                React.createElement('select', {
+                    value: preferences.sortPreference,
+                    onChange: (e) => setPreferences({ ...preferences, sortPreference: e.target.value })
+                },
+                    React.createElement('option', { value: 'date' }, 'Date'),
+                    React.createElement('option', { value: 'length' }, 'Length')
+                )
+            ),
+            React.createElement('div', { className: 'form-group' },
+                React.createElement('label', null, 'Username'),
+                React.createElement('input', {
+                    type: 'text',
+                    value: preferences.username,
+                    onChange: (e) => setPreferences({ ...preferences, username: e.target.value })
+                })
+            ),
+            React.createElement('button', {
+                onClick: handleSave
+            }, 'Save Changes')
+        )
+    );
+};
 
 // Blog posts data
 const blogPosts = [
@@ -189,6 +270,7 @@ function renderPost(post) {
             <div class="post-preview">${post.preview}</div>
         `;
     }
+    
 
     // Add comments section
     postContent += `
